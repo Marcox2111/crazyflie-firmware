@@ -15,6 +15,8 @@ static attitude_t attitudeDesired;
 static attitude_t rateDesired;
 static float actuatorThrust;
 
+static float cmd_velocityx;
+static float cmd_velocityy;
 static float cmd_thrust;
 static float cmd_roll;
 static float cmd_pitch;
@@ -130,6 +132,8 @@ void controllerPid(control_t *control, const setpoint_t *setpoint,
 
     control->yaw = -control->yaw;
 
+    cmd_velocityx=control->velocity.x;
+    cmd_velocityx=control->velocity.y;
     cmd_thrust = control->thrust;
     cmd_roll = control->roll;
     cmd_pitch = control->pitch;
@@ -139,7 +143,9 @@ void controllerPid(control_t *control, const setpoint_t *setpoint,
     r_yaw = radians(sensors->gyro.z);
     accelz = sensors->acc.z;
   }
-
+  
+  control->velocity.x = attitudeDesired.pitch*1600.0f;
+  control->velocity.y = attitudeDesired.roll*1600.0f;
   control->thrust = actuatorThrust;
 
   if (control->thrust == 0)
