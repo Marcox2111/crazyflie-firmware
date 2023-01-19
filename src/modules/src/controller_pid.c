@@ -147,7 +147,7 @@ void controllerPid(control_t *control, const setpoint_t *setpoint,
   control->velocity.x = attitudeDesired.pitch*1600.0f;
   control->velocity.y = attitudeDesired.roll*1600.0f;
   control->thrust = actuatorThrust;
-
+/*
   if (control->thrust == 0)
   {
     control->thrust = 0;
@@ -166,7 +166,9 @@ void controllerPid(control_t *control, const setpoint_t *setpoint,
     // Reset the calculated YAW angle for rate control
     attitudeDesired.yaw = state->attitude.yaw;
   }
+  */
 }
+
 
 /**
  * Logging variables for the command and reference signals for the
