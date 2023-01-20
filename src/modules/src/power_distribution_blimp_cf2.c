@@ -68,7 +68,7 @@ bool powerDistributionTest(void)
   return pass;
 }
 
-static uint16_t capMinThrust(float thrust, uint32_t minThrust) {
+static uint16_t capMinThrust(float thrust, uint32_t minThrust) { 
   if (thrust < minThrust) {
     return minThrust;
   }
@@ -79,7 +79,7 @@ static uint16_t capMinThrust(float thrust, uint32_t minThrust) {
 static void powerDistributionLegacy(const control_t *control, motors_thrust_uncapped_t* motorThrustUncapped)
 {
   // int16_t r = control->roll / 2.0f;
-  int16_t p = control->velocity.x;
+  //int16_t p = control->velocity.x;
 
   // motorThrustUncapped->motors.m1 = control->thrust - r + p - control->yaw;
   // motorThrustUncapped->motors.m2 = control->thrust - r - p + control->yaw;
@@ -89,8 +89,8 @@ static void powerDistributionLegacy(const control_t *control, motors_thrust_unca
   motorThrustUncapped->motors.m1 = control->thrust;
   motorThrustUncapped->motors.m4 = control->thrust;
 
-  motorThrustUncapped->motors.m2 =- p;
-  motorThrustUncapped->motors.m3 =+ p;
+  motorThrustUncapped->motors.m2 =+ control->yaw;
+  motorThrustUncapped->motors.m3 =- control->yaw;
 
 }
 

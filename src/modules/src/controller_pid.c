@@ -133,7 +133,7 @@ void controllerPid(control_t *control, const setpoint_t *setpoint,
     control->yaw = -control->yaw;
 
     cmd_velocityx=control->velocity.x;
-    cmd_velocityx=control->velocity.y;
+    cmd_velocityy=control->velocity.y;
     cmd_thrust = control->thrust;
     cmd_roll = control->roll;
     cmd_pitch = control->pitch;
