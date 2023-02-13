@@ -176,6 +176,8 @@ typedef enum control_mode_e {
 } control_mode_t;
 
 typedef struct control_s {
+  velocity_t velocity;
+
   union {
     // controlModeLegacy
     struct {
@@ -184,8 +186,6 @@ typedef struct control_s {
       int16_t yaw;
       float thrust;
     };
-
-    velocity_t velocity;
     
     // controlModeForceTorque
     // Note: Using SI units for a controller makes it hard to tune it for different platforms. The normalized force API
