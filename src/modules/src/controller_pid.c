@@ -132,8 +132,8 @@ void controllerPid(control_t *control, const setpoint_t *setpoint,
 
     control->yaw = -control->yaw;
 
-    cmd_velocityx=control->velocity.x;
-    cmd_velocityy=control->velocity.y;
+    
+    
     cmd_thrust = control->thrust;
     cmd_roll = control->roll;
     cmd_pitch = control->pitch;
@@ -147,6 +147,9 @@ void controllerPid(control_t *control, const setpoint_t *setpoint,
   control->velocity.x = attitudeDesired.pitch*1600.0f;
   control->velocity.y = attitudeDesired.roll*1600.0f;
   control->thrust = actuatorThrust;
+  cmd_velocityx=control->velocity.x;
+  cmd_velocityy=control->velocity.y;
+  
 /*
   if (control->thrust == 0)
   {
@@ -179,6 +182,14 @@ LOG_GROUP_START(controller)
  * @brief Thrust command
  */
 LOG_ADD(LOG_FLOAT, cmd_thrust, &cmd_thrust)
+/**
+ * @brief Velocityx command
+ */
+LOG_ADD(LOG_FLOAT, cmd_velocityx, &cmd_velocityx)
+/**
+ * @brief Velocityy command
+ */
+LOG_ADD(LOG_FLOAT, cmd_velocityy, &cmd_velocityy)
 /**
  * @brief Roll command
  */

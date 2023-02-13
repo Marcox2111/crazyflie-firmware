@@ -259,11 +259,11 @@ void velocityController(float* thrust, attitude_t *attitude, const Axis3f* setpo
   // Scale the thrust and add feed forward term
   *thrust = thrustRaw*thrustScale + this.thrustBase;
   // Check for minimum thrust
-  if (*thrust < this.thrustMin) {
+  if (fabs(*thrust) < this.thrustMin) {
     *thrust = this.thrustMin;
   }
     // saturate
-  *thrust = constrain(*thrust, 0, UINT16_MAX);
+  //*thrust = constrain(*thrust, 0, UINT16_MAX);
 }
 
 void positionControllerResetAllPID()
