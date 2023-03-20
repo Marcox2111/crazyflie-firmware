@@ -39,12 +39,12 @@
 #else
 #  define DEFAULT_IDLE_THRUST CONFIG_MOTORS_DEFAULT_IDLE_THRUST
 #endif
-
+static uint16_t testvariable;
 #define ZERO_THRUST 32767U
-#define UTH_THRUST (ZERO_THRUST+8000U)
-#define UOFF_THRUST (ZERO_THRUST+3000U)
-#define DTH_THRUST (ZERO_THRUST-8000U)
-#define DOFF_THRUST (ZERO_THRUST-3000U)
+#define UTH_THRUST (ZERO_THRUST+4000U)
+#define UOFF_THRUST (ZERO_THRUST+1000U)
+#define DTH_THRUST (ZERO_THRUST-4000U)
+#define DOFF_THRUST (ZERO_THRUST-1000U)
 
 static uint32_t idleThrust = DEFAULT_IDLE_THRUST;
 static float armLength = 0.046f; // m;
@@ -86,22 +86,25 @@ static void powerDistributionStartUpMotor(uint16_t motor[]){
   static uint16_t delay[4] = {0,0,0,0};
   for(uint8_t i=0; i<4; i++){
     if((motor[i] > DOFF_THRUST) && (motor[i] < UOFF_THRUST)){
+      if(delay[i]<700){
       motor[i]=ZERO_THRUST;
       delay[i]=0;
+      }
+      else delay[i]--;
     }
-    else if((motor[i] >= UOFF_THRUST) && (motor[i] <= UTH_THRUST)) {
-      if(delay[i] < 2000){
+    else if((motor[i] >= UOFF_THRUST) && (motor[i] < UTH_THRUST)) {
+      if(delay[i] < 1000){
         motor[i] = UTH_THRUST;
         delay[i]++;
       }
     }
-    else if((motor[i] >= DTH_THRUST) && (motor[i] <= DOFF_THRUST)) {
-      if(delay[i] < 2000){
+    else if((motor[i] > DTH_THRUST) && (motor[i] <= DOFF_THRUST)) {
+      if(delay[i] < 1000){
         motor[i] = DTH_THRUST;
         delay[i]++;
       }
-    else delay[i]=2000;
     }
+    else delay[i]=1000;    
   }
 }
 
@@ -114,6 +117,7 @@ static void powerDistributionLegacy(const control_t *control, motors_thrust_unca
   motor[0] = ZERO_THRUST + control->thrust / 2.0f - control->velocity.y / 2.0f;
   motor[3] = ZERO_THRUST + control->thrust / 2.0f + control->velocity.y / 2.0f;
 
+  testvariable=motor[1];
   powerDistributionStartUpMotor(motor);
 
   motorThrustUncapped->motors.m1 = motor[0];
@@ -229,3 +233,6 @@ PARAM_ADD(PARAM_FLOAT, pwmToThrustB, &pwmToThrustB)
 PARAM_ADD(PARAM_FLOAT, armLength, &armLength)
 PARAM_GROUP_STOP(quadSysId)
 
+LOG_GROUP_START(delay)
+LOG_ADD(LOG_UINT32, testvariable, &testvariable)
+LOG_GROUP_STOP(delay)
