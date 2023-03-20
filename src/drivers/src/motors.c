@@ -29,6 +29,7 @@
 #define DEBUG_MODULE "MTR-DRV"
 
 #include <stdbool.h>
+#include <math.h>
 
 /* ST includes */
 #include "stm32fxxx.h"
@@ -454,6 +455,23 @@ void motorsBurstDshot()
 }
 #endif
 
+uint16_t poly_regression(int degree, float x[], float a, float b) {
+    float c = 0.0;
+    int index = 0;
+    for (int i = 0; i <= degree; i++) {
+        for (int j = 0; j <= i; j++) {
+            c += x[index] * (float)pow(a, i - j) * (float)pow(b, j);
+            index++;
+        }
+    }
+    if (c > 65535) {
+        c = 65535;
+    }
+    else if(c < 0) {
+      c=0;
+    }
+    return (uint16_t)c;
+}
 
 // Ithrust is thrust mapped for 65536 <==> 60 grams
 void motorsSetRatio(uint32_t id, uint16_t ithrust)
@@ -467,7 +485,7 @@ void motorsSetRatio(uint32_t id, uint16_t ithrust)
       float supplyVoltage = pmGetBatteryVoltage();
       float thrust= +13 - motorPowerSet[id]*26/65535;
       float x[]={7147697.491334527f, 2.51838999e+04, -5.61275814e+06, -7.92062104e+02, -1.24482235e+04,  1.47845603e+06,  5.61529696e-01,  2.27292738e+02,  1.34032546e+03, -1.29974216e+05};
-      uint16_t command =  x[0] + thrust*x[1]+ supplyVoltage*x[2]+thrust*thrust*x[3]+supplyVoltage*thrust*x[4]+supplyVoltage*supplyVoltage*x[5]+thrust*thrust*thrust*x[6]+supplyVoltage*thrust*thrust*x[7]+supplyVoltage*supplyVoltage*thrust*x[8]+supplyVoltage*supplyVoltage*supplyVoltage*x[9];
+      uint16_t command = poly_regression(3, x, thrust, supplyVoltage);
       ratio = command;
     }
 
