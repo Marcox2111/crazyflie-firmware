@@ -29,6 +29,7 @@
 #define DEBUG_MODULE "MTR-DRV"
 
 #include <stdbool.h>
+#include <math.h>
 
 /* ST includes */
 #include "stm32fxxx.h"
@@ -456,20 +457,15 @@ void motorsBurstDshot()
 
 uint16_t poly_regression(int degree, float x[], float a, float b) {
     float c = 0.0;
-    float a_power = 1.0;
-    float b_power = 1.0;
     int index = 0;
     for (int i = 0; i <= degree; i++) {
-        b_power = 1.0;
         for (int j = 0; j <= i; j++) {
-            c += x[index] * a_power * b_power;
+            c += x[index] * (float)pow(a, i - j) * (float)pow(b, j);
             index++;
-            b_power *= b;
         }
-        a_power *= a;
     }
-    if (c > UINT16_MAX) {
-        c = UINT16_MAX;
+    if (c > 65535) {
+        c = 65535;
     }
     else if(c < 0) {
       c=0;
