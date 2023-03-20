@@ -466,8 +466,8 @@ void motorsSetRatio(uint32_t id, uint16_t ithrust)
     if (motorSetEnable) {
       float supplyVoltage = pmGetBatteryVoltage();
       float thrust= +13 - motorPowerSet[id]*26/65535;
-      float x[]={2.51838999e+04, -5.61275814e+06, -7.92062104e+02, -1.24482235e+04,  1.47845603e+06,  5.61529696e-01,  2.27292738e+02,  1.34032546e+03, -1.29974216e+05};
-      uint16_t command = 7147697.491334527f + thrust*x[0]+ supplyVoltage*x[1]+thrust*thrust*x[2]+supplyVoltage*thrust*x[3]+supplyVoltage*supplyVoltage*x[4]+thrust*thrust*thrust*x[5]+supplyVoltage*thrust*thrust*x[6]+supplyVoltage*supplyVoltage*thrust*x[7]+supplyVoltage*supplyVoltage*supplyVoltage*x[8];
+      float x[]={7147697.491334527f, 2.51838999e+04, -5.61275814e+06, -7.92062104e+02, -1.24482235e+04,  1.47845603e+06,  5.61529696e-01,  2.27292738e+02,  1.34032546e+03, -1.29974216e+05};
+      uint16_t command =  x[0] + thrust*x[1]+ supplyVoltage*x[2]+thrust*thrust*x[3]+supplyVoltage*thrust*x[4]+supplyVoltage*supplyVoltage*x[5]+thrust*thrust*thrust*x[6]+supplyVoltage*thrust*thrust*x[7]+supplyVoltage*supplyVoltage*thrust*x[8]+supplyVoltage*supplyVoltage*supplyVoltage*x[9];
       ratio = command;
     }
 
