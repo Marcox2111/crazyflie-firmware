@@ -484,8 +484,9 @@ void motorsSetRatio(uint32_t id, uint16_t ithrust)
     if (motorSetEnable) {
       float supplyVoltage = pmGetBatteryVoltage();
       float thrust= +13 - motorPowerSet[id]*26/65535;
-      float x[]={7147697.491334527f, 2.51838999e+04, -5.61275814e+06, -7.92062104e+02, -1.24482235e+04,  1.47845603e+06,  5.61529696e-01,  2.27292738e+02,  1.34032546e+03, -1.29974216e+05};
-      uint16_t command = poly_regression(3, x, thrust, supplyVoltage);
+      float xf[]={32425.354457753932, -5.95843135e+03, 0,  9.80022741e+01,  1.38188093e+03, 0, -2.26071697e+00, 5.09808776e+00 ,-1.23404732e+02, 0};
+      float xb[]={33153.03817401067, -10045.17883154, 0, -505.48420532,  1186.21580669, 0,-27.66454397, -36.85056958, -27.71149142, 0};
+      uint16_t command = poly_regression(3, (thrust <0) ? xb : xf, thrust, supplyVoltage);
       ratio = command;
     }
 
