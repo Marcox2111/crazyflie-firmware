@@ -341,6 +341,7 @@ void motorsTestTask(void* params);
  * */
 void motorsBeep(int id, bool enable, uint16_t frequency, uint16_t ratio);
 
+uint16_t poly_regression(int degree, float x[], float a, float b);
 /**
  * Retrieve the health test settings of the given motor. This allows us to use
  * different health test timings and PWM ratios for brushed and brushless motors.

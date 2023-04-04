@@ -131,9 +131,8 @@ void controllerPid(control_t *control, const setpoint_t *setpoint,
                                         &control->yaw);
 
     control->yaw = -control->yaw;
-
-    
-    
+    cmd_velocityx=control->velocity.x;
+    cmd_velocityy=control->velocity.y;
     cmd_thrust = control->thrust;
     cmd_roll = control->roll;
     cmd_pitch = control->pitch;
@@ -147,8 +146,7 @@ void controllerPid(control_t *control, const setpoint_t *setpoint,
   control->velocity.x = attitudeDesired.pitch*1600.0f;
   control->velocity.y = attitudeDesired.roll*1600.0f;
   control->thrust = actuatorThrust;
-  cmd_velocityx=control->velocity.x;
-  cmd_velocityy=control->velocity.y;
+
   
 /*
   if (control->thrust == 0)
@@ -171,7 +169,6 @@ void controllerPid(control_t *control, const setpoint_t *setpoint,
   }
   */
 }
-
 
 /**
  * Logging variables for the command and reference signals for the

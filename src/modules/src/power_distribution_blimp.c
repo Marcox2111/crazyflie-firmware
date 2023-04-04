@@ -39,7 +39,7 @@
 #else
 #  define DEFAULT_IDLE_THRUST CONFIG_MOTORS_DEFAULT_IDLE_THRUST
 #endif
-static uint16_t testvariable;
+
 #define ZERO_THRUST 32767U
 #define UTH_THRUST (ZERO_THRUST+4000U)
 #define UOFF_THRUST (ZERO_THRUST+1000U)
@@ -61,7 +61,7 @@ int powerDistributionMotorType(uint32_t id)
 
 uint16_t powerDistributionStopRatio(uint32_t id)
 {
-  return 0;
+  return 32600;
 }
 
 void powerDistributionInit(void)
@@ -114,10 +114,9 @@ static void powerDistributionLegacy(const control_t *control, motors_thrust_unca
 
   motor[1] = ZERO_THRUST + control->yaw / 2.0f + control->velocity.x / 2.0f;
   motor[2] = ZERO_THRUST - control->yaw / 2.0f + control->velocity.x / 2.0f;
-  motor[0] = ZERO_THRUST + control->thrust / 2.0f - control->velocity.y / 2.0f;
-  motor[3] = ZERO_THRUST + control->thrust / 2.0f + control->velocity.y / 2.0f;
+  motor[0] = ZERO_THRUST - control->thrust / 2.0f + control->velocity.y / 2.0f;
+  motor[3] = ZERO_THRUST - control->thrust / 2.0f - control->velocity.y / 2.0f;
 
-  testvariable=motor[1];
   powerDistributionStartUpMotor(motor);
 
   motorThrustUncapped->motors.m1 = motor[0];
@@ -232,7 +231,3 @@ PARAM_ADD(PARAM_FLOAT, pwmToThrustB, &pwmToThrustB)
  */
 PARAM_ADD(PARAM_FLOAT, armLength, &armLength)
 PARAM_GROUP_STOP(quadSysId)
-
-LOG_GROUP_START(delay)
-LOG_ADD(LOG_UINT32, testvariable, &testvariable)
-LOG_GROUP_STOP(delay)

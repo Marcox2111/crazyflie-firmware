@@ -194,6 +194,14 @@ float motorsCompensateBatteryVoltage(uint32_t id, float iThrust, float supplyVol
     float ratio = volts / supplyVoltage;
     return UINT16_MAX * ratio;
   }
+  else if(motorMap[id]->drvType==BRUSHLESS){
+      
+    float thrust= +13 - iThrust*26/65535;
+    float xf[]={32425.354457753932, -5.95843135e+03, 0,  9.80022741e+01,  1.38188093e+03, 0, -2.26071697e+00, 5.09808776e+00 ,-1.23404732e+02, 0};
+    float xb[]={33153.03817401067, -10045.17883154, 0, -505.48420532,  1186.21580669, 0,-27.66454397, -36.85056958, -27.71149142, 0};
+    uint16_t command = poly_regression(3, (thrust <0) ? xb : xf, thrust, supplyVoltage);
+    return command;
+  }
   #endif
 
   return iThrust;
@@ -482,12 +490,7 @@ void motorsSetRatio(uint32_t id, uint16_t ithrust)
     uint16_t ratio = ithrust;
 
     if (motorSetEnable) {
-      float supplyVoltage = pmGetBatteryVoltage();
-      float thrust= +13 - motorPowerSet[id]*26/65535;
-      float xf[]={32425.354457753932, -5.95843135e+03, 0,  9.80022741e+01,  1.38188093e+03, 0, -2.26071697e+00, 5.09808776e+00 ,-1.23404732e+02, 0};
-      float xb[]={33153.03817401067, -10045.17883154, 0, -505.48420532,  1186.21580669, 0,-27.66454397, -36.85056958, -27.71149142, 0};
-      uint16_t command = poly_regression(3, (thrust <0) ? xb : xf, thrust, supplyVoltage);
-      ratio = command;
+      ratio = motorPowerSet[id];
     }
 
     motor_ratios[id] = ratio;
