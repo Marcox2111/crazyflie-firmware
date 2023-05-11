@@ -199,7 +199,18 @@ float motorsCompensateBatteryVoltage(uint32_t id, float iThrust, float supplyVol
     float thrust= +13 - iThrust*26/65535;
     float xf[]={32425.354457753932, -5.95843135e+03, 0,  9.80022741e+01,  1.38188093e+03, 0, -2.26071697e+00, 5.09808776e+00 ,-1.23404732e+02, 0};
     float xb[]={33153.03817401067, -10045.17883154, 0, -505.48420532,  1186.21580669, 0,-27.66454397, -36.85056958, -27.71149142, 0};
-    uint16_t command = poly_regression(3, (thrust <0) ? xb : xf, thrust, supplyVoltage);
+    uint16_t command;
+    if (thrust>=0){
+      command = xf[0] + thrust*xf[1]+ supplyVoltage*xf[2]+thrust*thrust*xf[3]+supplyVoltage*thrust*xf[4]+supplyVoltage*supplyVoltage*xf[5]+thrust*thrust*thrust*xf[6]+supplyVoltage*thrust*thrust*xf[7]+supplyVoltage*supplyVoltage*thrust*xf[8]+supplyVoltage*supplyVoltage*supplyVoltage*xf[9];
+    } else {
+      command = xb[0] + thrust*xb[1]+ supplyVoltage*xb[2]+thrust*thrust*xb[3]+supplyVoltage*thrust*xb[4]+supplyVoltage*supplyVoltage*xb[5]+thrust*thrust*thrust*xb[6]+supplyVoltage*thrust*thrust*xb[7]+supplyVoltage*supplyVoltage*thrust*xb[8]+supplyVoltage*supplyVoltage*supplyVoltage*xb[9];
+    }
+    if (command > 65535) {
+        return 65535;
+    }
+    else if(command < 0) {
+      return 0;
+    }
     return command;
   }
   #endif
@@ -463,23 +474,23 @@ void motorsBurstDshot()
 }
 #endif
 
-uint16_t poly_regression(int degree, float x[], float a, float b) {
-    float c = 0.0;
-    int index = 0;
-    for (int i = 0; i <= degree; i++) {
-        for (int j = 0; j <= i; j++) {
-            c += x[index] * (float)pow(a, i - j) * (float)pow(b, j);
-            index++;
-        }
-    }
-    if (c > 65535) {
-        c = 65535;
-    }
-    else if(c < 0) {
-      c=0;
-    }
-    return (uint16_t)c;
-}
+// uint16_t poly_regression(int degree, float x[], float a, float b) {
+//     float c = 0.0;
+//     int index = 0;
+//     for (int i = 0; i <= degree; i++) {
+//         for (int j = 0; j <= i; j++) {
+//             c += x[index] * (float)pow(a, i - j) * (float)pow(b, j);
+//             index++;
+//         }
+//     }
+//     if (c > 65535) {
+//         c = 65535;
+//     }
+//     else if(c < 0) {
+//       c=0;
+//     }
+//     return (uint16_t)c;
+// }
 
 // Ithrust is thrust mapped for 65536 <==> 60 grams
 void motorsSetRatio(uint32_t id, uint16_t ithrust)

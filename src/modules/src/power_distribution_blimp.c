@@ -49,6 +49,7 @@
 static uint32_t idleThrust = DEFAULT_IDLE_THRUST;
 static float armLength = 0.046f; // m;
 static float thrustToTorque = 0.005964552f;
+static float timetostart = 700.0f;
 
 // thrust = a * pwm^2 + b * pwm
 static float pwmToThrustA = 0.091492681f;
@@ -86,25 +87,25 @@ static void powerDistributionStartUpMotor(uint16_t motor[]){
   static uint16_t delay[4] = {0,0,0,0};
   for(uint8_t i=0; i<4; i++){
     if((motor[i] > DOFF_THRUST) && (motor[i] < UOFF_THRUST)){
-      if(delay[i]<700){
+      if(delay[i]<timetostart){
       motor[i]=ZERO_THRUST;
       delay[i]=0;
       }
       else delay[i]--;
     }
     else if((motor[i] >= UOFF_THRUST) && (motor[i] < UTH_THRUST)) {
-      if(delay[i] < 1000){
+      if(delay[i] < timetostart){
         motor[i] = UTH_THRUST;
         delay[i]++;
       }
     }
     else if((motor[i] > DTH_THRUST) && (motor[i] <= DOFF_THRUST)) {
-      if(delay[i] < 1000){
+      if(delay[i] < timetostart){
         motor[i] = DTH_THRUST;
         delay[i]++;
       }
     }
-    else delay[i]=1000;    
+    else delay[i]=10000;    
   }
 }
 
@@ -223,6 +224,7 @@ PARAM_GROUP_START(quadSysId)
 PARAM_ADD(PARAM_FLOAT, thrustToTorque, &thrustToTorque)
 PARAM_ADD(PARAM_FLOAT, pwmToThrustA, &pwmToThrustA)
 PARAM_ADD(PARAM_FLOAT, pwmToThrustB, &pwmToThrustB)
+PARAM_ADD(PARAM_FLOAT, timetostart, &timetostart)
 
 /**
  * @brief Length of arms (m)
