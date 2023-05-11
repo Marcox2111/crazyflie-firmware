@@ -2,10 +2,10 @@ menu "Controllers and Estimators"
 
 choice
     prompt "Default controller"
-    default CONFIG_CONTROLLER_ANY
+    default CONFIG_CONTROLLER_AUTO_SELECT
 
-config CONTROLLER_ANY
-    bool "Any Controller"
+config CONTROLLER_AUTO_SELECT
+    bool "Auto select Controller"
     help
         Do not care which controller is used, if any
 
@@ -43,18 +43,42 @@ config CONTROLLER_BRESCIANINI
 
 endchoice
 
+config CONTROLLER_OOT
+    bool "Out-of-tree controller"
+    default n
+
 config ESTIMATOR_KALMAN_ENABLE
     bool "Enable Kalman Estimator"
     default y
+    select ESTIMATOR_OUTLIER_FILTERS
     help
         Enable the Kalman (EKF) estimator.
 
+config ESTIMATOR_KALMAN_TDOA_OUTLIERFILTER_FALLBACK
+    bool "Use 'old' TDoA outlier filter."
+    default n
+    depends on ESTIMATOR_KALMAN_ENABLE
+    help
+        Use the 'old' TDoA outlier filter instead of the default one. Deprecated, will be removed after September 2023.
+
+config ESTIMATOR_UKF_ENABLE
+    bool "Enable error-state UKF estimator"
+    select ESTIMATOR_OUTLIER_FILTERS
+    default n
+    help
+        Enable the (error-state unscented) Kalman filter (UKF) estimator
+
+config ESTIMATOR_OUTLIER_FILTERS
+    bool
+    help
+        Include outlier filters for estimators
+
 choice
     prompt "Default estimator"
-    default CONFIG_ESTIMATOR_ANY
+    default CONFIG_ESTIMATOR_AUTO_SELECT
 
-config ESTIMATOR_ANY
-    bool "Any Estimator"
+config ESTIMATOR_AUTO_SELECT
+    bool "Auto select Estimator"
     help
         Do not care which estimator is used, if any
 
@@ -63,6 +87,12 @@ config ESTIMATOR_KALMAN
     depends on ESTIMATOR_KALMAN_ENABLE
     help
         Use the (extended) Kalman filter (EKF) estimator as default
+
+config ESTIMATOR_UKF
+    bool "Error-state UKF estimator"
+    depends on ESTIMATOR_UKF_ENABLE
+    help
+        Use the (error-state unscented) Kalman filter (UKF) estimator as default
 
 config ESTIMATOR_COMPLEMENTARY
     bool "Complementary estimator"
@@ -141,6 +171,18 @@ config MOTORS_DEFAULT_PROP_TEST_PWM_RATIO
         drone uses full thrust for brushed motors and does not spin up brushless
         motors (for safety reasons). It is therefore advised to set this parameter
         explicitly for brushless builds to enable the motor test functionality.
+
+        The value specified here can also be overridden with parameters.
+
+config MOTORS_DEFAULT_BAT_TEST_PWM_RATIO
+    int "Override default PWM ratio to use during battery tests"
+    range 0 65535
+    default 0
+    help
+        PWM ratio to use during battery test, expressed as an integer in the range
+        0 to 65535. Zero means not to override the PWM ratio because there a differences
+        between brushed and brushless;. Brushless is 0 for safety reasons. Different motors
+        needs different value, hance this config variable.
 
         The value specified here can also be overridden with parameters.
 
