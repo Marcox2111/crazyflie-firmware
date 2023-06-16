@@ -40,23 +40,29 @@ void kalmanCoreUpdateWithPose(kalmanCoreData_t* this, poseMeasurement_t *pose)
   // compute orientation error
   struct quat const q_ekf = mkquat(this->q[1], this->q[2], this->q[3], this->q[0]);
   struct quat const q_measured = mkquat(pose->quat.x, pose->quat.y, pose->quat.z, pose->quat.w);
+
+  // struct vec const att_ekf = quat2rpy(q_ekf);
+  // struct vec const att_meas = quat2rpy(q_measured);
+  // struct vec const err_quat = vsub(att_meas, att_ekf);
   struct quat const q_residual = qqmul(qinv(q_ekf), q_measured);
-  // small angle approximation, see eq. 141 in http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf
-  struct vec const err_quat = vscl(2.0f / q_residual.w, quatimagpart(q_residual));
+  // // small angle approximation, see eq. 141 in http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf
+  // struct vec const err_quat = vscl(2.0f / q_residual.w, quatimagpart(q_residual));
+  struct vec const err_quat = quat2rpy(q_residual);
 
   // do a scalar update for each state
   {
     float h[KC_STATE_DIM] = {0};
     arm_matrix_instance_f32 H = {1, KC_STATE_DIM, h};
     h[KC_STATE_D0] = 1;
-    kalmanCoreScalarUpdate(this, &H, err_quat.x, pose->stdDevQuat);
+    kalmanCoreScalarUpdate(this, &H, err_quat.x*0, pose->stdDevQuat);
     h[KC_STATE_D0] = 0;
 
     h[KC_STATE_D1] = 1;
-    kalmanCoreScalarUpdate(this, &H, err_quat.y, pose->stdDevQuat);
+    kalmanCoreScalarUpdate(this, &H, err_quat.y*0, pose->stdDevQuat);
     h[KC_STATE_D1] = 0;
 
     h[KC_STATE_D2] = 1;
     kalmanCoreScalarUpdate(this, &H, err_quat.z, pose->stdDevQuat);
+    h[KC_STATE_D2] = 1;
   }
 }
