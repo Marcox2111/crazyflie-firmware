@@ -118,12 +118,12 @@ static void powerDistributionLegacy(const control_t *control, motors_thrust_unca
 
   if(control->velocity.y >= 0)
   {
-    motor[0] = ZERO_THRUST + control->thrust / 2.0f - control->velocity.y / 10.0f;
-    motor[3] = ZERO_THRUST + control->thrust / 2.0f + control->velocity.y / 2.0f;
+    motor[0] = ZERO_THRUST + control->thrust / 2.0f - control->velocity.y / 10.0f - control->roll/10;
+    motor[3] = ZERO_THRUST + control->thrust / 2.0f + control->velocity.y / 2.0f  + control->roll/2;
   }
   else {
-    motor[0] = ZERO_THRUST + control->thrust / 2.0f - control->velocity.y / 2.0f;
-    motor[3] = ZERO_THRUST + control->thrust / 2.0f + control->velocity.y / 10.0f;
+    motor[0] = ZERO_THRUST + control->thrust / 2.0f - control->velocity.y / 2.0f  - control->roll/2;
+    motor[3] = ZERO_THRUST + control->thrust / 2.0f + control->velocity.y / 10.0f + control->roll/10;
   }
 
 
