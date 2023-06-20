@@ -41,9 +41,9 @@
 #endif
 
 #define ZERO_THRUST 32767U
-#define UTH_THRUST (ZERO_THRUST+4000U)
+#define UTH_THRUST (ZERO_THRUST+2000U)
 #define UOFF_THRUST (ZERO_THRUST+1000U)
-#define DTH_THRUST (ZERO_THRUST-4000U)
+#define DTH_THRUST (ZERO_THRUST-2000U)
 #define DOFF_THRUST (ZERO_THRUST-1000U)
 
 static uint32_t idleThrust = DEFAULT_IDLE_THRUST;
@@ -83,31 +83,31 @@ static uint16_t capMinThrust(float thrust, uint32_t minThrust) {
   return thrust;
 }
 
-static void powerDistributionStartUpMotor(uint16_t motor[]){
-  static uint16_t delay[4] = {0,0,0,0};
-  for(uint8_t i=0; i<4; i++){
-    if((motor[i] > DOFF_THRUST) && (motor[i] < UOFF_THRUST)){
-      if(delay[i]<timetostart){
-      motor[i]=ZERO_THRUST;
-      delay[i]=0;
-      }
-      else delay[i]--;
-    }
-    else if((motor[i] >= UOFF_THRUST) && (motor[i] < UTH_THRUST)) {
-      if(delay[i] < timetostart){
-        motor[i] = UTH_THRUST;
-        delay[i]++;
-      }
-    }
-    else if((motor[i] > DTH_THRUST) && (motor[i] <= DOFF_THRUST)) {
-      if(delay[i] < timetostart){
-        motor[i] = DTH_THRUST;
-        delay[i]++;
-      }
-    }
-    else delay[i]=10000;    
-  }
-}
+// static void powerDistributionStartUpMotor(uint16_t motor[]){
+//   static uint16_t delay[4] = {0,0,0,0};
+//   for(uint8_t i=0; i<4; i++){
+//     if((motor[i] > DOFF_THRUST) && (motor[i] < UOFF_THRUST)){
+//       if(delay[i]<timetostart){
+//       motor[i]=ZERO_THRUST;
+//       delay[i]=0;
+//       }
+//       else delay[i]--;
+//     }
+//     else if((motor[i] >= UOFF_THRUST) && (motor[i] < UTH_THRUST)) {
+//       if(delay[i] < timetostart){
+//         motor[i] = UTH_THRUST;
+//         delay[i]++;
+//       }
+//     }
+//     else if((motor[i] > DTH_THRUST) && (motor[i] <= DOFF_THRUST)) {
+//       if(delay[i] < timetostart){
+//         motor[i] = DTH_THRUST;
+//         delay[i]++;
+//       }
+//     }
+//     else delay[i]=10000;    
+//   }
+// }
 
 static void powerDistributionLegacy(const control_t *control, motors_thrust_uncapped_t* motorThrustUncapped)
 {
@@ -118,17 +118,17 @@ static void powerDistributionLegacy(const control_t *control, motors_thrust_unca
 
   if(control->velocity.y >= 0)
   {
-    motor[0] = ZERO_THRUST + control->thrust / 2.0f - control->velocity.y / 10.0f - control->roll/10;
+    motor[0] = ZERO_THRUST + control->thrust / 2.0f - control->velocity.y / 4.0f - control->roll/10;
     motor[3] = ZERO_THRUST + control->thrust / 2.0f + control->velocity.y / 2.0f  + control->roll/2;
   }
   else {
     motor[0] = ZERO_THRUST + control->thrust / 2.0f - control->velocity.y / 2.0f  - control->roll/2;
-    motor[3] = ZERO_THRUST + control->thrust / 2.0f + control->velocity.y / 10.0f + control->roll/10;
+    motor[3] = ZERO_THRUST + control->thrust / 2.0f + control->velocity.y / 4.0f + control->roll/10;
   }
 
 
 
-  powerDistributionStartUpMotor(motor);
+  // powerDistributionStartUpMotor(motor);
 
   motorThrustUncapped->motors.m1 = motor[0];
   motorThrustUncapped->motors.m4 = motor[3];
