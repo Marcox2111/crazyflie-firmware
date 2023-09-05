@@ -127,11 +127,14 @@
  * only in the 1-2 ms range.
  */
   #define BLMC_PERIOD 0.0025   // 2.5ms = 400Hz
-  #define MOTORS_HIGH_PERIOD_ZERO  0.001 // 1ms for zero throttle
+  #define MOTORS_HIGH_PERIOD_ZERO  0.0015 // 1.5ms for zero throttle
+  #define MOTORS_HIGH_PERIOD_MAX   0.0019 // 1.5ms for zero throttle
+  #define MOTORS_HIGH_PERIOD_SPAN  (MOTORS_HIGH_PERIOD_MAX-MOTORS_HIGH_PERIOD_ZERO) // 1.5ms for zero throttle
 
   #define MOTORS_BL_PWM_PRESCALE_RAW   (uint32_t)((TIM_CLOCK_HZ/0xFFFF) * BLMC_PERIOD + 1) // +1 is to not end up above 0xFFFF in the end
   #define MOTORS_BL_PWM_CNT_FOR_PERIOD (uint32_t)(TIM_CLOCK_HZ * BLMC_PERIOD / MOTORS_BL_PWM_PRESCALE_RAW)
   #define MOTORS_BL_PWM_CNT_FOR_HIGH   (uint32_t)(TIM_CLOCK_HZ * MOTORS_HIGH_PERIOD_ZERO / MOTORS_BL_PWM_PRESCALE_RAW)
+  #define MOTORS_BL_PWM_CNT_FOR_SPAN   (uint32_t)(TIM_CLOCK_HZ * MOTORS_HIGH_PERIOD_SPAN / MOTORS_BL_PWM_PRESCALE_RAW)
   #define MOTORS_BL_PWM_PERIOD         MOTORS_BL_PWM_CNT_FOR_PERIOD
   #define MOTORS_BL_PWM_PRESCALE       (uint16_t)(MOTORS_BL_PWM_PRESCALE_RAW - 1)
   #define MOTORS_BL_POLARITY           TIM_OCPolarity_Low
